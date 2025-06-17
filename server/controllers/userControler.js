@@ -1,8 +1,11 @@
 // get / api/user/
+import User from "../models/User.js";
+
 
 export const getUserData = async (req, res)=>{
     try {
-        const role = req.user.role;
+        const role = req.User.role;
+
         const recentSearchedCities = req.user.recentSearchedCities;
         res.json({success: true, role, recentSearchedCities})
     }catch(error){
