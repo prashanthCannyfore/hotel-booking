@@ -1,7 +1,7 @@
 import { response } from "express";
 import Hotel from "../models/Hotels.js";
 import { v2 as cloudinary } from "cloudinary";
-import Room from "../models/Room.js"
+import Room from "../models/Room.js";
 
 export const createRoom = async (req, res) => {
   try {
@@ -25,26 +25,50 @@ export const createRoom = async (req, res) => {
     });
     res.josn({ success: true, message: "Room created successfully" });
   } catch (error) {
-    res.josn({ success: false, message: error.message})
+    res.josn({ success: false, message: error.message });
   }
-
 };
 
 // to get all rooms
 
-export const getRooms = async (req, res) => {};
- try {
-    const rooms = await Room.find({isAvailable: true}).populate({
-        path: 'hotel',
-        populate:{
-            path:'owner',
-            select: 'images',
-            
-        }
+export const getRooms = async (req, res) => {
+try {
+  const rooms = await Room.find({ isAvailable: true })
+    .populate({
+      path: "hotel",
+      populate: {
+        path: "owner",
+        select: "images",
+      },
     })
- } catch (error) {
-    
- }
-export const getOwnerRooms = async (req, res) => {};
+    .sort({ createdAt: -1 });
+  res.json({ success: true, rooms });
+} catch (error) {
+  res.json({ success: false, message: error.message });
+}
+}
 
-export const toggleRoomAvailibily = async (req, res) => {};
+
+export const getOwnerRooms = async (req, res) => {
+  try {
+    const hotelData = await Hotel({ owner: req.auth.userId });
+    const rooms = await Room.find({ hotel: hotelData._id.toString() }).populate(
+      "hotel"
+    );
+    res.json({ success: true, rooms });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export const toggleRoomAvailibily = async (req, res) => {
+  try {
+    const { roomId } = req.body;
+    const roomData = await Room.findById(roomId);
+    roomData.isAvailable = !roomData.isAvailable;
+    await roomData.save();
+    res.json({ success: true, message: "Room availability Updtated" });
+  } catch (error) {
+    res.json({ success: false, message: ErrorEvent.message });
+  }
+};
