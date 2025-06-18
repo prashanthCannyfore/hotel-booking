@@ -21,7 +21,7 @@ app.use(clerkMiddleware());
 
 app.use("/api/clerk", clerkWebhooks);
 console.log("✅ Clerk webhook endpoint was hit!");
-
+ 
 app.get("/", (req, res) => res.send("API is working"));
 app.use("/api/user", userRouter);
 app.use("/api/hotels", hotelRouter);
